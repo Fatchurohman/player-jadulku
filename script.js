@@ -1,4 +1,4 @@
-// script.js - Diperbarui untuk fungsionalitas penuh
+// script.js - Diperbarui dengan fungsionalitas Tombol Folder
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Inisialisasi Elemen DOM dengan Validasi Null/Undefined
     const playBtn = document.getElementById('play-btn');
@@ -7,8 +7,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
     const repeatBtn = document.getElementById('repeat-btn');
+    
+    // Menangkap elemen tombol folder (baik yang di transport bawah maupun knob kanan)
+    const folderTransportBtn = document.querySelector('.transport-btn:nth-child(6)') || document.getElementById('folder-btn');
+    const folderKnob = document.querySelector('.knob[data-function="folder"]');
+    
     const canvasContainer = document.getElementById('visualizer-canvas-container');
     const playlistItems = document.querySelectorAll('#playlist-items li');
+    const playlistContainer = document.querySelector('.playlist-card');
 
     if (!playBtn || !canvasContainer) {
         console.error("Elemen esensial pemutar audio tidak ditemukan di DOM.");
@@ -28,7 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
         playlist = Array.from(playlistItems).map((item, index) => ({
             id: index + 1,
             title: item ? item.textContent.trim() : `Track ${index + 1}`,
-            // Contoh menggunakan audio publik/sampel, silakan ganti dengan file lokal Anda (.mp3)
             url: [
                 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
                 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
@@ -88,7 +93,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Muat track pertama saat inisialisasi
     if (playlist.length > 0) {
         loadTrack(currentIndex);
     }
@@ -106,7 +110,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (analyser && isPlaying && audioCtx && audioCtx.state === 'running') {
             analyser.getByteFrequencyData(dataArray);
         } else {
-            // Efek diam/idle saat musik berhenti
             for (let i = 0; i < (dataArray ? dataArray.length : 32); i++) {
                 if (dataArray) dataArray[i] = Math.floor(Math.random() * 15) + 5;
             }
@@ -132,7 +135,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
     drawVisualizer();
 
-    // 6. Event Listener Tombol Kontrol Transport
+    // 6. Handler Aksi Tombol Folder (Simulasi Ganti / Muat Direktori Playlist)
+    function handleFolderAction() {
+        try {
+            console.log("Tombol FOLDER ditekan: Memuat direktori playlist baru...");
+            
+            // Efek visual sementara pada kartu playlist
+            if (playlistContainer) {
+                playlistContainer.style.borderColor = '#00ffcc';
+                setTimeout(() => {
+                    playlistContainer.style.borderColor = '#555';
+                }, 500);
+            }
+
+            // Contoh rotasi track playlist atau memuat folder lain
+            alert("Mode Folder: Menampilkan daftar lagu aktif di Player Jadulku.");
+        } catch (e) {
+            console.error("Gagal menjalankan aksi folder:", e);
+        }
+    }
+
+    // Pasang Event Listener ke Tombol Folder & Knob Folder
+    if (folderTransportBtn) {
+        folderTransportBtn.addEventListener('click', handleFolderAction);
+    }
+    if (folderKnob) {
+        folderKnob.addEventListener('click', handleFolderAction);
+    }
+
+    // 7. Event Listener Tombol Kontrol Transport Lainnya
     playBtn.addEventListener('click', () => {
         initAudioContext();
         if (audioCtx && audioCtx.state === 'suspended') {
@@ -182,7 +213,6 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log(`Repeat mode: ${audioElement.loop ? 'ON' : 'OFF'}`);
     });
 
-    // Otomatis pindah ke lagu berikutnya saat lagu habis
     audioElement.addEventListener('ended', () => {
         if (!audioElement.loop) {
             nextBtn.click();
