@@ -1,4 +1,4 @@
-// script.js - Logika Pemutar Musik, Web Audio API, & Visualizer
+// script.js - Diperbarui untuk fungsionalitas penuh
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Inisialisasi Elemen DOM dengan Validasi Null/Undefined
     const playBtn = document.getElementById('play-btn');
@@ -28,7 +28,12 @@ document.addEventListener('DOMContentLoaded', () => {
         playlist = Array.from(playlistItems).map((item, index) => ({
             id: index + 1,
             title: item ? item.textContent.trim() : `Track ${index + 1}`,
-            url: '' // Diisi path audio lokal/streaming jika ada
+            // Contoh menggunakan audio publik/sampel, silakan ganti dengan file lokal Anda (.mp3)
+            url: [
+                'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+                'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+                'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3'
+            ][index % 3] 
         }));
     } catch (error) {
         console.error("Gagal memparsing playlist:", error);
@@ -39,9 +44,31 @@ document.addEventListener('DOMContentLoaded', () => {
     let isPlaying = false;
     let animationId = null;
 
-    // 4. Web Audio API Setup untuk Efek Visualizer Real-time
+    // 4. Web Audio API & Audio Element Setup
     let audioCtx, analyser, dataArray, sourceNode;
     let audioElement = new Audio();
+    audioElement.crossOrigin = "anonymous";
+
+    function loadTrack(index) {
+        try {
+            if (playlist && playlist[index] && playlist[index].url) {
+                audioElement.src = playlist[index].url;
+                audioElement.load();
+                highlightActivePlaylist(index);
+            }
+        } catch (e) {
+            console.error("Error saat memuat track:", e);
+        }
+    }
+
+    function highlightActivePlaylist(index) {
+        playlistItems.forEach((li, idx) => {
+            if (li) {
+                li.style.color = (idx === index) ? '#00ffcc' : '#222';
+                li.style.fontWeight = (idx === index) ? 'bold' : 'normal';
+            }
+        });
+    }
 
     function initAudioContext() {
         if (!audioCtx) {
@@ -61,7 +88,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 5. Fungsi Render Visualizer (Efek Spektrum Warna Warni di Layar)
+    // Muat track pertama saat inisialisasi
+    if (playlist.length > 0) {
+        loadTrack(currentIndex);
+    }
+
+    // 5. Fungsi Render Visualizer
     function drawVisualizer() {
         animationId = requestAnimationFrame(drawVisualizer);
 
@@ -71,12 +103,12 @@ document.addEventListener('DOMContentLoaded', () => {
         canvasCtx.fillStyle = '#111111';
         canvasCtx.fillRect(0, 0, width, height);
 
-        if (analyser && isPlaying) {
+        if (analyser && isPlaying && audioCtx && audioCtx.state === 'running') {
             analyser.getByteFrequencyData(dataArray);
         } else {
-            // Animasi dummy statis/aktif saat audio berhenti agar layar tetap hidup
+            // Efek diam/idle saat musik berhenti
             for (let i = 0; i < (dataArray ? dataArray.length : 32); i++) {
-                if (dataArray) dataArray[i] = Math.floor(Math.random() * 40) + 10;
+                if (dataArray) dataArray[i] = Math.floor(Math.random() * 15) + 5;
             }
         }
 
@@ -87,7 +119,6 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let i = 0; i < bufferLen; i++) {
             const barHeight = (dataArray ? dataArray[i] : 20) * 1.2;
 
-            // Gradasi warna ala retro equalizer
             let red = barHeight + 25;
             let green = 255 - (i * 5);
             let blue = 150;
@@ -99,7 +130,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Jalankan loop visualizer
     drawVisualizer();
 
     // 6. Event Listener Tombol Kontrol Transport
@@ -108,41 +138,54 @@ document.addEventListener('DOMContentLoaded', () => {
         if (audioCtx && audioCtx.state === 'suspended') {
             audioCtx.resume();
         }
-        isPlaying = true;
-        console.log(`Memutar: ${playlist[currentIndex] ? playlist[currentIndex].title : 'Audio'}`);
-        // audioElement.play().catch(e => console.log("File audio belum di-set:", e));
+        
+        audioElement.play().then(() => {
+            isPlaying = true;
+            console.log(`Memutar: ${playlist[currentIndex].title}`);
+        }).catch(e => {
+            console.error("Gagal memutar audio:", e);
+        });
     });
 
     pauseBtn.addEventListener('click', () => {
         isPlaying = false;
         audioElement.pause();
-        console.log("Audio dijeda (Paused)");
+        console.log("Audio dijeda");
     });
 
     stopBtn.addEventListener('click', () => {
         isPlaying = false;
         audioElement.pause();
         audioElement.currentTime = 0;
-        console.log("Audio dihentikan (Stopped)");
+        console.log("Audio dihentikan");
     });
 
     nextBtn.addEventListener('click', () => {
         if (playlist.length > 0) {
             currentIndex = (currentIndex + 1) % playlist.length;
-            console.log(`Track selanjutnya: ${playlist[currentIndex].title}`);
+            loadTrack(currentIndex);
+            if (isPlaying) audioElement.play();
         }
     });
 
     prevBtn.addEventListener('click', () => {
         if (playlist.length > 0) {
             currentIndex = (currentIndex - 1 + playlist.length) % playlist.length;
-            console.log(`Track sebelumnya: ${playlist[currentIndex].title}`);
+            loadTrack(currentIndex);
+            if (isPlaying) audioElement.play();
         }
     });
 
     repeatBtn.addEventListener('click', () => {
         audioElement.loop = !audioElement.loop;
+        repeatBtn.style.background = audioElement.loop ? 'linear-gradient(to bottom, #a0ffa0, #50c050)' : '';
         console.log(`Repeat mode: ${audioElement.loop ? 'ON' : 'OFF'}`);
     });
 
+    // Otomatis pindah ke lagu berikutnya saat lagu habis
+    audioElement.addEventListener('ended', () => {
+        if (!audioElement.loop) {
+            nextBtn.click();
+        }
+    });
 });
