@@ -32,17 +32,22 @@ body {
 }
 
 
-/* Efek Plat Logam Emas Timbul (Gold Embossed) untuk Developer Tag */
+/* Efek Plat Logam Emas Timbul (Gold Embossed) - Diperjelas */
 .dev-tag {
     font-family: 'Courier New', Courier, monospace;
-    font-size: 16px;
-    font-weight: bold;
+    font-size: 17px;
+    font-weight: 900;
     letter-spacing: 2px;
-    background: linear-gradient(135deg, #bf953f 0%, #fcf6ba 25%, #b38728 50%, #fbf5b7 75%, #aa771c 100%);
+    
+    /* Gradasi Emas yang Lebih Kontras */
+    background: linear-gradient(135deg, #ffd700 0%, #ffdf73 30%, #cca146 50%, #fff2b2 75%, #996515 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    filter: drop-shadow(1px 1px 0px rgba(255, 255, 255, 0.8)) 
-            drop-shadow(-1px -1px 1px rgba(0, 0, 0, 0.9));
+    
+    /* Bayangan Timbul (Embossed 3D) yang Lebih Tebal agar Mudah Dibaca */
+    filter: drop-shadow(1px 2px 0px rgba(0, 0, 0, 0.95))
+            drop-shadow(0px -1px 1px rgba(255, 255, 255, 0.6));
+            
     padding: 2px 6px;
 }
 
