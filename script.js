@@ -1,3 +1,25 @@
+// Skrip Auto-Scale untuk Memastikan Rasio 16:9 Selalu Utuh di HP Landscape
+function resizeRadioContainer() {
+    const wrapper = document.querySelector('.radio-scaler-wrapper');
+    if (!wrapper) return;
+
+    const baseWidth = 1280;
+    const baseHeight = 720;
+
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+
+    // Hitung skala berdasarkan lebar dan tinggi layar perangkat
+    const scaleX = windowWidth / baseWidth;
+    const scaleY = windowHeight / baseHeight;
+    const scale = Math.min(scaleX, scaleY);
+
+    wrapper.style.transform = `scale(${scale})`;
+}
+
+window.addEventListener('resize', resizeRadioContainer);
+window.addEventListener('DOMContentLoaded', resizeRadioContainer);
+
 // script.js - Diperbarui dengan dukungan File Selector (Buka Folder/File dari HP)
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Inisialisasi Elemen DOM dengan Validasi Null/Undefined
