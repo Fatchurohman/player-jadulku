@@ -1,36 +1,35 @@
-// Skrip Auto-Scale untuk Memastikan Rasio 16:9 Selalu Utuh di HP Landscape
-function resizeRadioContainer() {
-    const wrapper = document.querySelector('.radio-scaler-wrapper');
-    if (!wrapper) return;
-
-    const baseWidth = 1280;
-    const baseHeight = 720;
-
-    const windowWidth = window.innerWidth;
-    const windowHeight = window.innerHeight;
-
-    // Hitung skala berdasarkan lebar dan tinggi layar perangkat
-    const scaleX = windowWidth / baseWidth;
-    const scaleY = windowHeight / baseHeight;
-    const scale = Math.min(scaleX, scaleY);
-
-    wrapper.style.transform = `scale(${scale})`;
-}
-
-window.addEventListener('resize', resizeRadioContainer);
-window.addEventListener('DOMContentLoaded', resizeRadioContainer);
-
-// script.js - Diperbarui dengan dukungan File Selector (Buka Folder/File dari HP)
+// script.js - Lengkap dengan Auto-Scale 16:9, Visualizer, & File Picker Lokal HP
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Inisialisasi Elemen DOM dengan Validasi Null/Undefined
+
+    // 1. Fungsi Auto-Scale agar Radio 16:9 Utuh di HP Landscape
+    function resizeRadioContainer() {
+        const wrapper = document.querySelector('.radio-scaler-wrapper');
+        if (!wrapper) return;
+
+        const baseWidth = 1280;
+        const baseHeight = 720;
+
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight;
+
+        const scaleX = windowWidth / baseWidth;
+        const scaleY = windowHeight / baseHeight;
+        const scale = Math.min(scaleX, scaleY);
+
+        wrapper.style.transform = `scale(${scale})`;
+    }
+
+    window.addEventListener('resize', resizeRadioContainer);
+    resizeRadioContainer();
+
+    // 2. Inisialisasi Elemen Pemutar Audio & Validasi DOM
     const playBtn = document.getElementById('play-btn');
     const pauseBtn = document.getElementById('pause-btn');
     const stopBtn = document.getElementById('stop-btn');
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
     const repeatBtn = document.getElementById('repeat-btn');
-    
-    const folderTransportBtn = document.querySelector('.transport-btn:nth-child(6)') || document.getElementById('folder-btn');
+    const folderBtn = document.getElementById('folder-btn');
     const folderKnob = document.querySelector('.knob[data-function="folder"]');
     
     const canvasContainer = document.getElementById('visualizer-canvas-container');
@@ -42,22 +41,22 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // 2. Buat Elemen Input File Tersembunyi untuk Akses Perangkat/HP
+    // 3. Buat Input File Tersembunyi untuk Ambil Musik dari HP
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
     fileInput.accept = 'audio/*';
-    fileInput.multiple = true; // Bisa pilih banyak lagu sekaligus
+    fileInput.multiple = true;
     fileInput.style.display = 'none';
     document.body.appendChild(fileInput);
 
-    // 3. Setup Canvas untuk Audio Visualizer
+    // 4. Setup Canvas Visualizer
     const canvas = document.createElement('canvas');
-    canvas.width = canvasContainer.clientWidth || 400;
-    canvas.height = canvasContainer.clientHeight || 180;
+    canvas.width = canvasContainer.clientWidth || 600;
+    canvas.height = canvasContainer.clientHeight || 250;
     canvasContainer.appendChild(canvas);
     const canvasCtx = canvas.getContext('2d');
 
-    // 4. Data Playlist Awal (JSON Aman & Validasi)
+    // 5. Data Playlist Default (JSON Aman & Validasi)
     let playlist = [];
     try {
         const initialItems = document.querySelectorAll('#playlist-items li');
@@ -79,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let isPlaying = false;
     let animationId = null;
 
-    // 5. Web Audio API & Audio Element Setup
+    // 6. Web Audio API & Audio Element
     let audioCtx, analyser, dataArray, sourceNode;
     let audioElement = new Audio();
     audioElement.crossOrigin = "anonymous";
@@ -128,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
         loadTrack(currentIndex);
     }
 
-    // 6. Fungsi Render Visualizer
+    // 7. Render Efek Visualizer Real-time
     function drawVisualizer() {
         animationId = requestAnimationFrame(drawVisualizer);
 
@@ -166,25 +165,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     drawVisualizer();
 
-    // 7. Handler Tombol Folder untuk Membuka Penyimpanan File Lokal HP
+    // 8. Event Handler untuk Tombol Folder (Buka File HP)
     function handleFolderOpen() {
         try {
-            fileInput.click(); // Memicu dialog pilih file/folder di perangkat
+            fileInput.click();
         } catch (e) {
-            console.error("Gagal membuka dialog file:", e);
+            console.error("Gagal membuka file picker:", e);
         }
     }
 
-    if (folderTransportBtn) folderTransportBtn.addEventListener('click', handleFolderOpen);
+    if (folderBtn) folderBtn.addEventListener('click', handleFolderOpen);
     if (folderKnob) folderKnob.addEventListener('click', handleFolderOpen);
 
-    // Event saat pengguna selesai memilih file dari HP
     fileInput.addEventListener('change', (event) => {
         try {
             const files = event.target.files;
             if (!files || files.length === 0) return;
 
-            // Reset playlist dengan file lokal yang dipilih
             playlist = [];
             playlistContainer.innerHTML = '';
 
@@ -196,7 +193,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     url: fileUrl
                 });
 
-                // Tambahkan ke tampilan UI Playlist Card
                 const li = document.createElement('li');
                 li.textContent = `${index + 1}. ${file.name}`;
                 playlistContainer.appendChild(li);
@@ -208,13 +204,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 playlistCard.style.borderColor = '#00ffcc';
                 setTimeout(() => playlistCard.style.borderColor = '#555', 600);
             }
-            console.log(`Berhasil memuat ${playlist.length} lagu dari perangkat.`);
+            console.log(`Berhasil memuat ${playlist.length} lagu lokal.`);
         } catch (e) {
             console.error("Error memproses file lokal:", e);
         }
     });
 
-    // 8. Event Listener Tombol Kontrol Transport Lainnya
+    // 9. Event Listener Kontrol Transport Musik
     playBtn.addEventListener('click', () => {
         initAudioContext();
         if (audioCtx && audioCtx.state === 'suspended') {
