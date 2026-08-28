@@ -8,110 +8,102 @@
 </head>
 <body>
 
-    <div class="radio-container brushed-metal">
-        <!-- Bagian Header -->
-        <header class="radio-header">
-            <div class="brand-logo">± ANALOG AUDIO SYSTEM ±</div>
-            <div class="dev-tag">DEV: fatur62</div>
-        </header>
+    <!-- Wrapper Skala 16:9 -->
+    <div class="radio-scaler-wrapper">
+        <div class="radio-container brushed-metal">
+            <!-- Bagian Header -->
+            <header class="radio-header">
+                <div class="brand-logo">± ANALOG AUDIO SYSTEM ±</div>
+                <div class="dev-tag">DEV: fatur62</div>
+            </header>
 
-        <!-- Bagian Layar Atas (Visualizer & Tuning) -->
-        <section class="top-section">
-            <div class="vu-meter-box">
-                <div class="vu-meter-needle"></div>
-                <span>VU</span>
-            </div>
-            <div class="tuning-display">
-                FM  88 ... 102 ... 108  MHz
-                AM 550 ... 700 ... 1600 ... 1600 kHz
-            </div>
-            <div class="knob large-knob" data-function="tuning"></div>
-        </section>
-
-        <!-- Bagian Tengah (Layar Visualizer & Kontrol Samping) -->
-        <section class="middle-section">
-            <!-- Kontrol Kiri -->
-            <div class="controls-left">
-                <div class="info-plate">
-                    <h3>FATUR</h3>
-                    <p>AUDIO</p>
-                    <p>JADUL & HIGH-FIDELITY</p>
+            <!-- Bagian Atas (Visualizer & Tuning) -->
+            <section class="top-section">
+                <div class="vu-meter-box">
+                    <div class="vu-meter-needle"></div>
+                    <span>VU</span>
                 </div>
-                <div class="sliders-group">
-                    <div class="slider-wrapper">
-                        <input type="range" orient="vertical" class="slider extra-vol">
-                        <label>EXTRA VOLUME</label>
+                <div class="tuning-display">
+                    FM  88 ... 102 ... 108  MHz<br>
+                    AM 550 ... 700 ... 1600 ... 1600 kHz
+                </div>
+                <div class="knob large-knob" data-function="tuning"></div>
+            </section>
+
+            <!-- Bagian Tengah (Layar Visualizer & Kontrol Samping) -->
+            <section class="middle-section">
+                <!-- Kontrol Kiri -->
+                <div class="controls-left">
+                    <div class="info-plate">
+                        <h3>FATUR</h3>
+                        <p>AUDIO - JADUL & HIGH-FIDELITY</p>
                     </div>
-                    <div class="slider-wrapper">
-                        <input type="range" orient="vertical" class="slider extra-vol">
-                        <label>EXTRA VOLUME</label>
+                    <div class="sliders-group">
+                        <div class="slider-wrapper">
+                            <input type="range" orient="vertical" class="slider extra-vol">
+                            <label>EXTRA VOL</label>
+                        </div>
+                        <div class="slider-wrapper">
+                            <input type="range" orient="vertical" class="slider extra-vol">
+                            <label>EXTRA VOL</label>
+                        </div>
+                        <div class="toggle-wrapper">
+                            <label>BASS ON</label>
+                            <label class="switch">
+                                <input type="checkbox" id="bass-switch">
+                            </label>
+                        </div>
                     </div>
-                    <div class="toggle-wrapper">
-                        <label>BASS ENHANCE ON</label>
-                        <label class="switch">
-                            <input type="checkbox" id="bass-switch">
-                            <span class="slider-round"></span>
-                        </label>
-                        <label>OFF</label>
+                </div>
+
+                <!-- Layar Visualizer -->
+                <div class="visualizer-screen-frame">
+                    <div id="visualizer-canvas-container"></div>
+                </div>
+
+                <!-- Kontrol Kanan -->
+                <div class="controls-right">
+                    <div class="knob-group">
+                        <div class="knob medium-knob" data-function="play-mode"></div>
+                        <label>PLAY MODE</label>
+                    </div>
+                    <div class="knob-group">
+                        <div class="knob medium-knob" data-function="bass-enhance"></div>
+                        <label>BASS</label>
+                    </div>
+                    <div class="knob-group">
+                         <div class="knob medium-knob" data-function="folder"></div>
+                        <label>FOLDER</label>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <!-- Layar Visualizer -->
-            <div class="visualizer-screen-frame">
-                <div id="visualizer-canvas-container">
-                    <!-- Di sinilah efek visualizer akan dirender oleh script.js -->
+            <!-- Bagian Playlist & Tombol Kontrol Utama -->
+            <section class="bottom-section">
+                <div class="playlist-card brushed-metal">
+                    <h4>PLAYLIST CARD</h4>
+                    <ul id="playlist-items">
+                        <li>1. MISTENNE PARE STOCK</li>
+                        <li>2. MISTENNE PARE STOCK</li>
+                        <li>3. PLAYLIST OAD</li>
+                        <li>4. ODETERS</li>
+                    </ul>
                 </div>
-            </div>
+                <div class="transport-controls">
+                    <button class="transport-btn" id="prev-btn">PREV</button>
+                    <button class="transport-btn" id="stop-btn">STOP</button>
+                    <button class="transport-btn" id="play-btn">PLAY</button>
+                    <button class="transport-btn" id="pause-btn">PAUSE</button>
+                    <button class="transport-btn" id="next-btn">NEXT</button>
+                    <button class="transport-btn" id="repeat-btn">REPEAT</button>
+                    <button class="transport-btn" id="folder-btn">FOLDER</button>
+                </div>
+            </section>
 
-            <!-- Kontrol Kanan -->
-            <div class="controls-right">
-                <div class="knob-group">
-                    <div class="knob medium-knob" data-function="play-mode"></div>
-                    <label>PLAY MODE</label>
-                </div>
-                <div class="knob-group">
-                    <div class="knob medium-knob" data-function="bass-enhance"></div>
-                    <label>BASS ENHANCE</label>
-                </div>
-                 <div class="knob-group">
-                    <div class="knob medium-knob" data-function="next-track"></div>
-                    <label>NEXT</label>
-                </div>
-                <div class="knob-group">
-                     <div class="knob medium-knob" data-function="folder"></div>
-                    <label>FOLDER</label>
-                </div>
-            </div>
-        </section>
-
-        <!-- Bagian Playlist & Tombol Kontrol Utama -->
-        <section class="bottom-section">
-            <div class="playlist-card brushed-metal">
-                <h4>PLAYLIST CARD</h4>
-                <ul id="playlist-items">
-                    <li>1. MISTENNE PARE STOCK</li>
-                    <li>2. MISTENNE PARE STOCK</li>
-                    <li>3. PLAYLIST OAD</li>
-                    <li>4. ODETERS</li>
-                    <li>5. MISTENNE PARE STOCK</li>
-                    <li>6. POLOER CARD</li>
-                </ul>
-            </div>
-            <div class="transport-controls">
-                <button class="transport-btn" id="prev-btn">PREV</button>
-                <button class="transport-btn" id="stop-btn">STOP</button>
-                <button class="transport-btn" id="play-btn">PLAY</button>
-                <button class="transport-btn" id="pause-btn">PAUSE</button>
-                <button class="transport-btn" id="next-btn">NEXT</button>
-                <button class="transport-btn" id="repeat-btn">REPEAT</button>
-            </div>
-        </section>
-
-         <footer class="radio-footer">
-            <span class="custom-edition-tag">PLAYER JADULKU - CUSTOM EDITION</span>
-         </footer>
-
+             <footer class="radio-footer">
+                <span class="custom-edition-tag">PLAYER JADULKU - 16:9 RESPONSIVE EDITION</span>
+             </footer>
+        </div>
     </div>
 
     <script src="script.js"></script>
