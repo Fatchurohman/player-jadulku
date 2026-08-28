@@ -17,7 +17,8 @@ body {
     font-family: 'Courier New', Courier, monospace;
     width: 100vw;
     height: 100vh;
-    height: 100dvh;
+    /* Gunakan 85vh agar ada ruang sisa untuk address bar browser di bawah */
+    height: 85vh; 
     display: flex;
     justify-content: center;
     align-items: center;
@@ -25,7 +26,11 @@ body {
     position: fixed;
     top: 0;
     left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
 }
+
 
 /* Efek Plat Logam Emas Timbul (Gold Embossed) untuk Developer Tag */
 .dev-tag {
