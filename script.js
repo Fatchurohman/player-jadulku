@@ -1,4 +1,4 @@
-// script.js - Diperbarui dengan fungsionalitas Tombol Folder
+// script.js - Diperbarui dengan dukungan File Selector (Buka Folder/File dari HP)
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Inisialisasi Elemen DOM dengan Validasi Null/Undefined
     const playBtn = document.getElementById('play-btn');
@@ -8,30 +8,38 @@ document.addEventListener('DOMContentLoaded', () => {
     const nextBtn = document.getElementById('next-btn');
     const repeatBtn = document.getElementById('repeat-btn');
     
-    // Menangkap elemen tombol folder (baik yang di transport bawah maupun knob kanan)
     const folderTransportBtn = document.querySelector('.transport-btn:nth-child(6)') || document.getElementById('folder-btn');
     const folderKnob = document.querySelector('.knob[data-function="folder"]');
     
     const canvasContainer = document.getElementById('visualizer-canvas-container');
-    const playlistItems = document.querySelectorAll('#playlist-items li');
-    const playlistContainer = document.querySelector('.playlist-card');
+    const playlistContainer = document.getElementById('playlist-items');
+    const playlistCard = document.querySelector('.playlist-card');
 
     if (!playBtn || !canvasContainer) {
         console.error("Elemen esensial pemutar audio tidak ditemukan di DOM.");
         return;
     }
 
-    // 2. Setup Canvas untuk Audio Visualizer
+    // 2. Buat Elemen Input File Tersembunyi untuk Akses Perangkat/HP
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'audio/*';
+    fileInput.multiple = true; // Bisa pilih banyak lagu sekaligus
+    fileInput.style.display = 'none';
+    document.body.appendChild(fileInput);
+
+    // 3. Setup Canvas untuk Audio Visualizer
     const canvas = document.createElement('canvas');
     canvas.width = canvasContainer.clientWidth || 400;
     canvas.height = canvasContainer.clientHeight || 180;
     canvasContainer.appendChild(canvas);
     const canvasCtx = canvas.getContext('2d');
 
-    // 3. Simulasi Playlist Data (JSON Aman & Validasi Tipe Data)
+    // 4. Data Playlist Awal (JSON Aman & Validasi)
     let playlist = [];
     try {
-        playlist = Array.from(playlistItems).map((item, index) => ({
+        const initialItems = document.querySelectorAll('#playlist-items li');
+        playlist = Array.from(initialItems).map((item, index) => ({
             id: index + 1,
             title: item ? item.textContent.trim() : `Track ${index + 1}`,
             url: [
@@ -41,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ][index % 3] 
         }));
     } catch (error) {
-        console.error("Gagal memparsing playlist:", error);
+        console.error("Gagal memparsing playlist awal:", error);
         playlist = [];
     }
 
@@ -49,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let isPlaying = false;
     let animationId = null;
 
-    // 4. Web Audio API & Audio Element Setup
+    // 5. Web Audio API & Audio Element Setup
     let audioCtx, analyser, dataArray, sourceNode;
     let audioElement = new Audio();
     audioElement.crossOrigin = "anonymous";
@@ -67,7 +75,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function highlightActivePlaylist(index) {
-        playlistItems.forEach((li, idx) => {
+        const currentItems = playlistContainer.querySelectorAll('li');
+        currentItems.forEach((li, idx) => {
             if (li) {
                 li.style.color = (idx === index) ? '#00ffcc' : '#222';
                 li.style.fontWeight = (idx === index) ? 'bold' : 'normal';
@@ -97,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
         loadTrack(currentIndex);
     }
 
-    // 5. Fungsi Render Visualizer
+    // 6. Fungsi Render Visualizer
     function drawVisualizer() {
         animationId = requestAnimationFrame(drawVisualizer);
 
@@ -135,35 +144,55 @@ document.addEventListener('DOMContentLoaded', () => {
 
     drawVisualizer();
 
-    // 6. Handler Aksi Tombol Folder (Simulasi Ganti / Muat Direktori Playlist)
-    function handleFolderAction() {
+    // 7. Handler Tombol Folder untuk Membuka Penyimpanan File Lokal HP
+    function handleFolderOpen() {
         try {
-            console.log("Tombol FOLDER ditekan: Memuat direktori playlist baru...");
-            
-            // Efek visual sementara pada kartu playlist
-            if (playlistContainer) {
-                playlistContainer.style.borderColor = '#00ffcc';
-                setTimeout(() => {
-                    playlistContainer.style.borderColor = '#555';
-                }, 500);
-            }
-
-            // Contoh rotasi track playlist atau memuat folder lain
-            alert("Mode Folder: Menampilkan daftar lagu aktif di Player Jadulku.");
+            fileInput.click(); // Memicu dialog pilih file/folder di perangkat
         } catch (e) {
-            console.error("Gagal menjalankan aksi folder:", e);
+            console.error("Gagal membuka dialog file:", e);
         }
     }
 
-    // Pasang Event Listener ke Tombol Folder & Knob Folder
-    if (folderTransportBtn) {
-        folderTransportBtn.addEventListener('click', handleFolderAction);
-    }
-    if (folderKnob) {
-        folderKnob.addEventListener('click', handleFolderAction);
-    }
+    if (folderTransportBtn) folderTransportBtn.addEventListener('click', handleFolderOpen);
+    if (folderKnob) folderKnob.addEventListener('click', handleFolderOpen);
 
-    // 7. Event Listener Tombol Kontrol Transport Lainnya
+    // Event saat pengguna selesai memilih file dari HP
+    fileInput.addEventListener('change', (event) => {
+        try {
+            const files = event.target.files;
+            if (!files || files.length === 0) return;
+
+            // Reset playlist dengan file lokal yang dipilih
+            playlist = [];
+            playlistContainer.innerHTML = '';
+
+            Array.from(files).forEach((file, index) => {
+                const fileUrl = URL.createObjectURL(file);
+                playlist.push({
+                    id: index + 1,
+                    title: file.name,
+                    url: fileUrl
+                });
+
+                // Tambahkan ke tampilan UI Playlist Card
+                const li = document.createElement('li');
+                li.textContent = `${index + 1}. ${file.name}`;
+                playlistContainer.appendChild(li);
+            });
+
+            currentIndex = 0;
+            loadTrack(currentIndex);
+            if (playlistCard) {
+                playlistCard.style.borderColor = '#00ffcc';
+                setTimeout(() => playlistCard.style.borderColor = '#555', 600);
+            }
+            console.log(`Berhasil memuat ${playlist.length} lagu dari perangkat.`);
+        } catch (e) {
+            console.error("Error memproses file lokal:", e);
+        }
+    });
+
+    // 8. Event Listener Tombol Kontrol Transport Lainnya
     playBtn.addEventListener('click', () => {
         initAudioContext();
         if (audioCtx && audioCtx.state === 'suspended') {
@@ -172,7 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         audioElement.play().then(() => {
             isPlaying = true;
-            console.log(`Memutar: ${playlist[currentIndex].title}`);
+            console.log(`Memutar: ${playlist[currentIndex] ? playlist[currentIndex].title : ''}`);
         }).catch(e => {
             console.error("Gagal memutar audio:", e);
         });
@@ -181,14 +210,12 @@ document.addEventListener('DOMContentLoaded', () => {
     pauseBtn.addEventListener('click', () => {
         isPlaying = false;
         audioElement.pause();
-        console.log("Audio dijeda");
     });
 
     stopBtn.addEventListener('click', () => {
         isPlaying = false;
         audioElement.pause();
         audioElement.currentTime = 0;
-        console.log("Audio dihentikan");
     });
 
     nextBtn.addEventListener('click', () => {
@@ -210,7 +237,6 @@ document.addEventListener('DOMContentLoaded', () => {
     repeatBtn.addEventListener('click', () => {
         audioElement.loop = !audioElement.loop;
         repeatBtn.style.background = audioElement.loop ? 'linear-gradient(to bottom, #a0ffa0, #50c050)' : '';
-        console.log(`Repeat mode: ${audioElement.loop ? 'ON' : 'OFF'}`);
     });
 
     audioElement.addEventListener('ended', () => {
