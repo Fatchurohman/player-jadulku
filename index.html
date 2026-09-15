@@ -5,6 +5,37 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>fatur62 Luxury Music Player</title>
   <style>
+    /* VARIABLES & THEMES */
+    :root {
+      /* Dark Theme (Default) */
+      --body-bg: linear-gradient(135deg, #090a0f 0%, #171923 100%);
+      --player-bg: rgba(15, 23, 42, 0.92);
+      --player-border: rgba(255, 255, 255, 0.12);
+      --text-main: #f8fafc;
+      --text-sub: #94a3b8;
+      --btn-bg: rgba(255, 255, 255, 0.06);
+      --btn-border: rgba(255, 255, 255, 0.12);
+      --accent-color: #38bdf8;
+      --accent-glow: rgba(56, 189, 248, 0.4);
+      --progress-bg: rgba(255, 255, 255, 0.08);
+      --shadow-color: rgba(0, 0, 0, 0.7);
+    }
+
+    [data-theme="light"] {
+      /* Light Theme */
+      --body-bg: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+      --player-bg: rgba(255, 255, 255, 0.88);
+      --player-border: rgba(255, 255, 255, 0.6);
+      --text-main: #0f172a;
+      --text-sub: #64748b;
+      --btn-bg: rgba(0, 0, 0, 0.04);
+      --btn-border: rgba(0, 0, 0, 0.08);
+      --accent-color: #0284c7;
+      --accent-glow: rgba(2, 132, 199, 0.3);
+      --progress-bg: rgba(0, 0, 0, 0.08);
+      --shadow-color: rgba(148, 163, 184, 0.4);
+    }
+
     /* RESET & BASE STYLES */
     * {
       box-sizing: border-box;
@@ -14,14 +45,15 @@
     }
 
     body {
-      background: #08090c;
-      color: #ffffff;
+      background: var(--body-bg);
+      color: var(--text-main);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
       overflow: hidden;
+      transition: background 0.4s ease;
     }
 
     /* CONTAINER 9:16 LUXURY GLASSMORPHISM */
@@ -32,15 +64,17 @@
       height: 100vh;
       max-height: 896px;
       aspect-ratio: 9 / 16;
-      background: radial-gradient(circle at top left, rgba(30, 41, 59, 0.5), rgba(15, 23, 42, 0.95));
-      backdrop-filter: blur(20px);
+      background: var(--player-bg);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       padding: 24px 20px 32px 20px;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 30px rgba(59, 130, 246, 0.15);
+      box-shadow: 0 25px 50px -12px var(--shadow-color), 0 0 30px var(--accent-glow);
       overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--player-border);
+      transition: all 0.4s ease;
     }
 
     @media (min-height: 900px) and (min-width: 500px) {
@@ -59,26 +93,26 @@
     }
 
     .brand-tag {
-      font-size: 0.75rem;
+      font-size: 0.8rem;
       font-weight: 800;
       letter-spacing: 2px;
-      color: #38bdf8;
+      color: var(--accent-color);
       text-transform: uppercase;
-      text-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+      text-shadow: 0 0 10px var(--accent-glow);
     }
 
     .header-title {
       font-size: 0.85rem;
       letter-spacing: 1.5px;
       text-transform: uppercase;
-      color: #94a3b8;
+      color: var(--text-sub);
       font-weight: 600;
     }
 
     .icon-btn {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: #ffffff;
+      background: var(--btn-bg);
+      border: 1px solid var(--btn-border);
+      color: var(--text-main);
       width: 42px;
       height: 42px;
       border-radius: 50%;
@@ -90,8 +124,8 @@
     }
 
     .icon-btn:hover {
-      background: rgba(255, 255, 255, 0.15);
-      border-color: rgba(255, 255, 255, 0.25);
+      border-color: var(--accent-color);
+      color: var(--accent-color);
     }
 
     .icon-btn:active {
@@ -113,7 +147,7 @@
     .album-art-wrapper {
       position: relative;
       width: 100%;
-      max-width: 270px;
+      max-width: 260px;
       aspect-ratio: 1 / 1;
     }
 
@@ -124,7 +158,7 @@
       width: 100%;
       height: 100%;
       border-radius: 24px;
-      background: #3b82f6;
+      background: var(--accent-color);
       filter: blur(25px);
       opacity: 0.3;
       transition: opacity 0.3s ease;
@@ -145,26 +179,24 @@
       width: 100%;
       height: 100%;
       border-radius: 24px;
-      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: var(--btn-bg);
+      border: 1px solid var(--player-border);
       display: flex;
-      flex-direction: column;
       justify-content: center;
       align-items: center;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 15px 35px var(--shadow-color);
       overflow: hidden;
     }
 
     .album-art-placeholder svg {
       width: 64px;
       height: 64px;
-      fill: #475569;
-      margin-bottom: 12px;
+      fill: var(--text-sub);
       transition: fill 0.3s ease;
     }
 
     .player-wrapper.playing .album-art-placeholder svg {
-      fill: #38bdf8;
+      fill: var(--accent-color);
     }
 
     /* VISUALIZER ANIMATION */
@@ -179,7 +211,7 @@
     .bar {
       width: 4px;
       height: 6px;
-      background: #38bdf8;
+      background: var(--accent-color);
       border-radius: 2px;
       transition: height 0.2s ease;
     }
@@ -209,7 +241,7 @@
     .track-title {
       font-size: 1.35rem;
       font-weight: 700;
-      color: #f8fafc;
+      color: var(--text-main);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -218,7 +250,7 @@
 
     .track-artist {
       font-size: 0.9rem;
-      color: #94a3b8;
+      color: var(--text-sub);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -236,9 +268,9 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: rgba(56, 189, 248, 0.1);
-      border: 1px solid rgba(56, 189, 248, 0.3);
-      color: #38bdf8;
+      background: var(--btn-bg);
+      border: 1px solid var(--accent-color);
+      color: var(--accent-color);
       padding: 8px 16px;
       border-radius: 20px;
       font-size: 0.8rem;
@@ -248,9 +280,9 @@
     }
 
     .btn-open-file:hover {
-      background: rgba(56, 189, 248, 0.2);
-      border-color: #38bdf8;
-      box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+      background: var(--accent-color);
+      color: #ffffff;
+      box-shadow: 0 0 12px var(--accent-glow);
     }
 
     /* PROGRESS BAR */
@@ -263,7 +295,7 @@
     .progress-bar {
       width: 100%;
       height: 6px;
-      background: rgba(255, 255, 255, 0.08);
+      background: var(--progress-bg);
       border-radius: 3px;
       cursor: pointer;
       position: relative;
@@ -273,16 +305,16 @@
     .progress-fill {
       width: 0%;
       height: 100%;
-      background: linear-gradient(90deg, #0284c7 0%, #38bdf8 100%);
+      background: var(--accent-color);
       border-radius: 3px;
-      box-shadow: 0 0 8px #38bdf8;
+      box-shadow: 0 0 8px var(--accent-glow);
     }
 
     .time-stamps {
       display: flex;
       justify-content: space-between;
       font-size: 0.75rem;
-      color: #64748b;
+      color: var(--text-sub);
       margin-top: 8px;
       font-weight: 500;
     }
@@ -299,15 +331,15 @@
     .play-btn {
       width: 64px;
       height: 64px;
-      background: linear-gradient(135deg, #38bdf8 0%, #2563eb 100%);
+      background: var(--accent-color);
       color: #ffffff;
       border: none;
       border-radius: 50%;
-      box-shadow: 0 8px 25px rgba(37, 99, 235, 0.5);
+      box-shadow: 0 8px 25px var(--accent-glow);
     }
 
     .play-btn:hover {
-      box-shadow: 0 10px 30px rgba(56, 189, 248, 0.7);
+      transform: scale(1.05);
     }
 
     .svg-icon {
@@ -322,9 +354,9 @@
     }
 
     .active-mode {
-      color: #38bdf8 !important;
-      border-color: rgba(56, 189, 248, 0.4) !important;
-      background: rgba(56, 189, 248, 0.1) !important;
+      color: var(--accent-color) !important;
+      border-color: var(--accent-color) !important;
+      background: var(--btn-bg) !important;
     }
 
     #fileInput {
@@ -339,8 +371,11 @@
     <header class="player-header">
       <div class="brand-tag">fatur62</div>
       <span class="header-title">NOW PLAYING</span>
-      <button class="icon-btn" id="playlistBtn" aria-label="Playlist">
-        <svg class="svg-icon" viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
+      <button class="icon-btn" id="themeToggleBtn" aria-label="Toggle Theme">
+        <svg class="svg-icon" id="themeIcon" viewBox="0 0 24 24">
+          <!-- Sun Icon (Light Mode Target) -->
+          <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/>
+        </svg>
       </button>
     </header>
 
@@ -419,6 +454,7 @@
         this.isPlaying = false;
         this.isShuffle = false;
         this.isRepeat = false;
+        this.isLightMode = false;
 
         this.audio = new Audio();
 
@@ -431,6 +467,8 @@
         this.nextBtn = document.getElementById('nextBtn');
         this.shuffleBtn = document.getElementById('shuffleBtn');
         this.repeatBtn = document.getElementById('repeatBtn');
+        this.themeToggleBtn = document.getElementById('themeToggleBtn');
+        this.themeIcon = document.getElementById('themeIcon');
 
         this.trackTitle = document.getElementById('trackTitle');
         this.trackArtist = document.getElementById('trackArtist');
@@ -448,10 +486,13 @@
       }
 
       bindEvents() {
-        // File input handler
+        // Theme Toggle Handler
+        this.themeToggleBtn.addEventListener('click', () => this.toggleTheme());
+
+        // File Input Handler
         this.fileInput.addEventListener('change', (e) => this.handleFileSelection(e));
 
-        // Controls
+        // Player Controls
         this.playBtn.addEventListener('click', () => this.togglePlay());
         this.nextBtn.addEventListener('click', () => this.nextTrack());
         this.prevBtn.addEventListener('click', () => this.prevTrack());
@@ -466,7 +507,7 @@
           this.repeatBtn.classList.toggle('active-mode', this.isRepeat);
         });
 
-        // Audio events
+        // Audio Listeners
         this.audio.addEventListener('loadedmetadata', () => {
           this.durationTimeEl.textContent = this.formatTime(this.audio.duration);
         });
@@ -488,13 +529,26 @@
           }
         });
 
-        // Seek Progress Bar
+        // Progress Seek Bar
         this.progressBar.addEventListener('click', (e) => {
           if (!this.audio.duration) return;
           const rect = this.progressBar.getBoundingClientRect();
           const clickX = e.clientX - rect.left;
           this.audio.currentTime = (clickX / rect.width) * this.audio.duration;
         });
+      }
+
+      toggleTheme() {
+        this.isLightMode = !this.isLightMode;
+        if (this.isLightMode) {
+          document.documentElement.setAttribute('data-theme', 'light');
+          // Icon Moon
+          this.themeIcon.innerHTML = '<path d="M12.3 2c.43 0 .77.35.75.78-.29 5.08 3.76 9.13 8.84 8.84.43-.02.78.32.78.75-.27 4.86-4.22 8.8-9.08 9.07-5.4.3-9.83-3.96-9.83-9.33 0-4.86 3.94-8.81 8.8-9.08.25-.02.5-.03.74-.03z"/>';
+        } else {
+          document.documentElement.removeAttribute('data-theme');
+          // Icon Sun
+          this.themeIcon.innerHTML = '<path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/>';
+        }
       }
 
       handleFileSelection(e) {
