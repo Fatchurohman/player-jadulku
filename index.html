@@ -10,30 +10,34 @@
       /* Dark Theme (Default) */
       --body-bg: linear-gradient(135deg, #090a0f 0%, #171923 100%);
       --player-bg: rgba(15, 23, 42, 0.92);
-      --player-border: rgba(255, 255, 255, 0.12);
+      --player-border-outer: rgba(255, 255, 255, 0.25);
+      --player-border-inner: rgba(255, 255, 255, 0.1);
       --text-main: #f8fafc;
       --text-sub: #94a3b8;
       --btn-bg: rgba(255, 255, 255, 0.06);
-      --btn-border: rgba(255, 255, 255, 0.12);
+      --btn-border: rgba(255, 255, 255, 0.15);
       --accent-color: #38bdf8;
       --accent-glow: rgba(56, 189, 248, 0.4);
       --progress-bg: rgba(255, 255, 255, 0.08);
-      --shadow-color: rgba(0, 0, 0, 0.7);
+      --shadow-color: rgba(0, 0, 0, 0.85);
+      --inner-glow: rgba(255, 255, 255, 0.15);
     }
 
     [data-theme="light"] {
       /* Light Theme */
       --body-bg: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
-      --player-bg: rgba(255, 255, 255, 0.88);
-      --player-border: rgba(255, 255, 255, 0.6);
+      --player-bg: rgba(255, 255, 255, 0.92);
+      --player-border-outer: rgba(0, 0, 0, 0.2);
+      --player-border-inner: rgba(255, 255, 255, 0.8);
       --text-main: #0f172a;
       --text-sub: #64748b;
       --btn-bg: rgba(0, 0, 0, 0.04);
-      --btn-border: rgba(0, 0, 0, 0.08);
+      --btn-border: rgba(0, 0, 0, 0.12);
       --accent-color: #0284c7;
       --accent-glow: rgba(2, 132, 199, 0.3);
       --progress-bg: rgba(0, 0, 0, 0.08);
-      --shadow-color: rgba(148, 163, 184, 0.4);
+      --shadow-color: rgba(100, 116, 139, 0.4);
+      --inner-glow: rgba(255, 255, 255, 0.6);
     }
 
     /* RESET & BASE STYLES */
@@ -56,7 +60,7 @@
       transition: background 0.4s ease;
     }
 
-    /* CONTAINER 9:16 LUXURY GLASSMORPHISM */
+    /* CONTAINER 9:16 REALISTIC DEVICE PLAYER */
     .player-wrapper {
       position: relative;
       width: 100%;
@@ -65,21 +69,31 @@
       max-height: 896px;
       aspect-ratio: 9 / 16;
       background: var(--player-bg);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       padding: 24px 20px 32px 20px;
-      box-shadow: 0 25px 50px -12px var(--shadow-color), 0 0 30px var(--accent-glow);
+
+      /* TEPIAN TEGAS & REALISTIS (3D HARD BEZEL & SHADOWS) */
+      border: 2px solid var(--player-border-outer);
+      outline: 1px solid var(--player-border-inner);
+      outline-offset: -3px;
+      box-shadow: 
+        0 20px 50px -10px var(--shadow-color),
+        0 0 0 1px rgba(0, 0, 0, 0.5),
+        inset 0 1px 2px var(--inner-glow),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.4),
+        0 0 25px var(--accent-glow);
+
       overflow: hidden;
-      border: 1px solid var(--player-border);
       transition: all 0.4s ease;
     }
 
     @media (min-height: 900px) and (min-width: 500px) {
       .player-wrapper {
-        border-radius: 36px;
+        border-radius: 40px;
         height: calc(100vh - 40px);
       }
     }
@@ -120,6 +134,7 @@
       justify-content: center;
       align-items: center;
       cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
@@ -180,11 +195,11 @@
       height: 100%;
       border-radius: 24px;
       background: var(--btn-bg);
-      border: 1px solid var(--player-border);
+      border: 1.5px solid var(--btn-border);
       display: flex;
       justify-content: center;
       align-items: center;
-      box-shadow: 0 15px 35px var(--shadow-color);
+      box-shadow: 0 15px 35px var(--shadow-color), inset 0 1px 1px rgba(255, 255, 255, 0.2);
       overflow: hidden;
     }
 
@@ -199,7 +214,7 @@
       fill: var(--accent-color);
     }
 
-    /* CANVAS VISUALIZER (AUDIO SPECTRUM REAL-TIME) */
+    /* CANVAS VISUALIZER */
     .visualizer-canvas {
       width: 200px;
       height: 36px;
@@ -232,7 +247,7 @@
       text-overflow: ellipsis;
     }
 
-    /* ACTION BUTTON (OPEN FILE) */
+    /* ACTION BUTTON */
     .file-upload-wrapper {
       display: flex;
       justify-content: center;
@@ -252,6 +267,7 @@
       font-size: 0.8rem;
       font-weight: 600;
       cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       transition: all 0.2s ease;
     }
 
@@ -276,6 +292,7 @@
       cursor: pointer;
       position: relative;
       overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     .progress-fill {
@@ -372,7 +389,7 @@
       <p id="trackArtist" class="track-artist">Silakan buka file lokal</p>
     </section>
 
-    <!-- ACTION BUTTON: BUKA FOLDER/FILE -->
+    <!-- ACTION BUTTON -->
     <div class="file-upload-wrapper">
       <label for="fileInput" class="btn-open-file">
         <svg class="svg-icon" viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/></svg>
@@ -428,13 +445,11 @@
 
         this.audio = new Audio();
         
-        // Web Audio API Context & Analyser
         this.audioCtx = null;
         this.analyser = null;
         this.audioSource = null;
         this.animationId = null;
 
-        // DOM Elements
         this.playerWrapper = document.getElementById('playerApp');
         this.fileInput = document.getElementById('fileInput');
         this.playBtn = document.getElementById('playBtn');
@@ -454,7 +469,6 @@
         this.currentTimeEl = document.getElementById('currentTime');
         this.durationTimeEl = document.getElementById('durationTime');
 
-        // Visualizer Canvas
         this.canvas = document.getElementById('visualizerCanvas');
         this.canvasCtx = this.canvas.getContext('2d');
 
@@ -471,7 +485,7 @@
           const AudioContext = window.AudioContext || window.webkitAudioContext;
           this.audioCtx = new AudioContext();
           this.analyser = this.audioCtx.createAnalyser();
-          this.analyser.fftSize = 64; // Resolusi spektrum frekuensi
+          this.analyser.fftSize = 64;
           
           this.audioSource = this.audioCtx.createMediaElementSource(this.audio);
           this.audioSource.connect(this.analyser);
@@ -553,7 +567,7 @@
             const value = dataArray[i * 2] || 0;
             const percent = value / 255;
             let barHeight = percent * this.canvas.height;
-            if (barHeight < 4) barHeight = 4; // Minimal height
+            if (barHeight < 4) barHeight = 4;
 
             const y = (this.canvas.height - barHeight) / 2;
 
