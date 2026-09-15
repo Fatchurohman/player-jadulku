@@ -1,11 +1,3 @@
-:root {
-    --metal-base: #b0b0b0;
-    --metal-light: #d6d6d6;
-    --metal-dark: #7a7a7a;
-    --panel-border: #4d4d4d;
-    --lcd-bg: #111111;
-}
-
 * {
     box-sizing: border-box;
     margin: 0;
@@ -13,286 +5,146 @@
 }
 
 body {
-    background-color: #050505;
+    background-color: #121212;
+    color: #e0e0e0;
     font-family: 'Courier New', Courier, monospace;
-    width: 100vw;
-    height: 100vh;
-    /* Gunakan 85vh agar ada ruang sisa untuk address bar browser di bawah */
-    height: 85vh; 
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    margin: auto;
+    min-height: 100vh;
 }
 
-
-/* Efek Plat Logam Emas Timbul (Gold Embossed) - Diperjelas */
-.dev-tag {
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 17px;
-    font-weight: 900;
-    letter-spacing: 2px;
-    
-    /* Gradasi Emas yang Lebih Kontras */
-    background: linear-gradient(135deg, #ffd700 0%, #ffdf73 30%, #cca146 50%, #fff2b2 75%, #996515 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    
-    /* Bayangan Timbul (Embossed 3D) yang Lebih Tebal agar Mudah Dibaca */
-    filter: drop-shadow(1px 2px 0px rgba(0, 0, 0, 0.95))
-            drop-shadow(0px -1px 1px rgba(255, 255, 255, 0.6));
-            
-    padding: 2px 6px;
-}
-
-/* Pembungkus Utama untuk Menjaga Rasio 16:9 */
 .radio-scaler-wrapper {
-    width: 1280px;
-    height: 720px;
-    position: relative;
-    transform-origin: center center;
+    width: 100%;
+    max-width: 960px;
+    aspect-ratio: 16 / 9;
+    padding: 10px;
+    display: flex;
 }
 
-/* Kontributor Radio dengan Resolusi Master 16:9 */
 .radio-container {
-    width: 1280px;
-    height: 720px;
-    background: linear-gradient(135deg, var(--metal-light) 0%, var(--metal-base) 50%, var(--metal-dark) 100%);
-    border: 6px solid var(--panel-border);
+    width: 100%;
+    height: 100%;
+    border: 4px solid #333;
     border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.9), inset 0 3px 8px rgba(255,255,255,0.6);
+    padding: 15px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+}
+
+.brushed-metal {
+    background: linear-gradient(135deg, #2c2c2c 0%, #4a4a4a 50%, #2c2c2c 100%);
 }
 
 .radio-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    font-size: 16px;
     font-weight: bold;
-    letter-spacing: 2px;
-    color: #222;
-    border-bottom: 3px groove rgba(255,255,255,0.5);
-    padding-bottom: 8px;
+    font-size: clamp(0.7rem, 1.2vw, 1rem);
+    border-bottom: 2px solid #555;
+    padding-bottom: 5px;
 }
 
 .top-section {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    background: linear-gradient(to bottom, #d0d0d0, #9e9e9e);
-    border: 3px inset #666;
-    padding: 12px 20px;
+    background: #1a1a1a;
+    padding: 10px;
     border-radius: 6px;
-    gap: 25px;
-}
-
-.vu-meter-box {
-    width: 160px;
-    height: 65px;
-    background: #e8e4c9;
-    border: 3px solid #444;
-    border-radius: 4px;
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    padding-bottom: 6px;
-    font-size: 14px;
-    font-weight: bold;
-    box-shadow: inset 0 0 10px rgba(0,0,0,0.4);
 }
 
 .tuning-display {
-    flex-grow: 1;
-    font-size: 18px;
-    font-weight: bold;
-    color: #111;
-    border-left: 3px dashed #777;
-    border-right: 3px dashed #777;
-    padding: 0 25px;
-    line-height: 1.4;
+    color: #00ff66;
+    font-size: clamp(0.65rem, 1vw, 0.9rem);
+    text-align: center;
 }
 
 .middle-section {
     display: flex;
-    gap: 20px;
-    flex-grow: 1;
-    margin: 15px 0;
+    gap: 10px;
+    align-items: center;
+    justify-content: space-between;
 }
 
-.controls-left {
-    width: 320px;
-    background: rgba(200, 200, 200, 0.4);
-    border: 3px groove #888;
-    padding: 15px;
-    border-radius: 6px;
+.controls-left, .controls-right {
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
-}
-
-.info-plate {
-    background: #eaeaea;
-    border: 2px solid #555;
-    padding: 10px;
-    text-align: center;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
-}
-
-.info-plate h3 {
-    font-size: 18px;
-    letter-spacing: 2px;
-}
-
-.info-plate p {
-    font-size: 12px;
-}
-
-.sliders-group {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-}
-
-.slider-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    font-size: 11px;
-    gap: 6px;
-    font-weight: bold;
+    gap: 8px;
+    font-size: 0.75rem;
 }
 
 .visualizer-screen-frame {
     flex-grow: 1;
-    background: #333;
-    border: 5px solid #222;
-    border-radius: 8px;
-    padding: 12px;
-    box-shadow: inset 0 0 15px rgba(0,0,0,0.9);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-#visualizer-canvas-container {
-    width: 100%;
-    height: 100%;
-    background: var(--lcd-bg);
-    border: 3px inset #000;
+    height: 140px;
+    background-color: #000;
+    border: 2px solid #555;
     border-radius: 4px;
-    position: relative;
-    overflow: hidden;
-}
-
-.controls-right {
-    width: 220px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    background: rgba(200, 200, 200, 0.4);
-    border: 3px groove #888;
-    padding: 15px;
-    border-radius: 6px;
-    align-items: center;
-}
-
-.knob-group {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    font-size: 12px;
-    font-weight: bold;
-    gap: 6px;
-}
-
-.knob {
-    width: 55px;
-    height: 55px;
-    background: radial-gradient(circle, #f0f0f0 40%, #888 100%);
-    border: 3px solid #444;
-    border-radius: 50%;
-    box-shadow: 0 5px 8px rgba(0,0,0,0.4), inset 0 3px 5px rgba(255,255,255,0.8);
-    cursor: pointer;
-}
-
-.knob.large-knob {
-    width: 65px;
-    height: 65px;
 }
 
 .bottom-section {
     display: flex;
-    gap: 20px;
+    gap: 15px;
+    align-items: stretch;
 }
 
 .playlist-card {
-    width: 380px;
-    background: #e3dec3;
-    border: 3px solid #555;
-    border-radius: 6px;
-    padding: 12px 15px;
-    box-shadow: inset 0 0 8px rgba(0,0,0,0.2);
-    max-height: 110px;
-    overflow-y: auto;
+    flex: 1;
+    border: 1px solid #666;
+    padding: 8px;
+    font-size: 0.75rem;
+    border-radius: 4px;
 }
 
-.playlist-card h4 {
-    font-size: 13px;
-    border-bottom: 2px solid #777;
-    padding-bottom: 4px;
-    margin-bottom: 6px;
-}
-
-#playlist-items {
+.playlist-card ul {
     list-style: none;
-    font-size: 12px;
-    line-height: 1.5;
-    font-weight: bold;
 }
 
+/* Penyesuaian Responsif Tombol Transport Bottom */
 .transport-controls {
-    flex-grow: 1;
-    background: rgba(180, 180, 180, 0.6);
-    border: 3px groove #888;
-    border-radius: 6px;
+    flex: 2;
     display: flex;
-    justify-content: space-between;
+    gap: 8px;
     align-items: center;
-    padding: 12px 20px;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    background: #111;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #444;
 }
 
 .transport-btn {
-    flex: 1;
-    margin: 0 6px;
-    padding: 14px 0;
-    background: linear-gradient(to bottom, #f2f2f2, #bcbcbc);
-    border: 3px solid #555;
-    border-radius: 5px;
-    font-family: 'Courier New', Courier, monospace;
+    flex: 1 1 auto;
+    min-width: 60px;
+    padding: 10px 12px;
+    font-size: clamp(0.75rem, 1.2vw, 1.05rem); /* Ukuran teks dinamis & lebih besar */
     font-weight: bold;
-    font-size: 12px;
+    letter-spacing: 1px;
+    color: #fff;
+    background: linear-gradient(180deg, #555 0%, #222 100%);
+    border: 1px solid #777;
+    border-radius: 4px;
     cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.3), inset 0 2px 3px rgba(255,255,255,0.8);
+    text-transform: uppercase;
+    box-shadow: 0 3px 0 #000, inset 0 1px 0 rgba(255,255,255,0.3);
+    transition: all 0.1s ease;
+}
+
+.transport-btn:hover {
+    background: linear-gradient(180deg, #666 0%, #333 100%);
+    color: #00ff66;
 }
 
 .transport-btn:active {
     transform: translateY(2px);
-    background: linear-gradient(to bottom, #bcbcbc, #f2f2f2);
+    box-shadow: 0 1px 0 #000;
 }
 
 .radio-footer {
     text-align: center;
-    font-size: 12px;
-    font-weight: bold;
-    color: #333;
-    letter-spacing: 2px;
+    font-size: 0.7rem;
+    color: #888;
 }
