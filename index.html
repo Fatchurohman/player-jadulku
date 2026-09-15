@@ -3,84 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Player Jadulku - Fatur</title>
+    <title>Player Jadulku - Fatur (9:16 Edition)</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- Wrapper Skala 16:9 -->
+    <!-- Wrapper Skala 9:16 Portrait -->
     <div class="radio-scaler-wrapper">
         <div class="radio-container brushed-metal">
-            <!-- Bagian Header -->
+            
+            <!-- Header -->
             <header class="radio-header">
                 <div class="brand-logo">± ANALOG AUDIO SYSTEM ±</div>
                 <div class="dev-tag">DEVELOPER : fatur62</div>
             </header>
 
-            <!-- Bagian Atas (Visualizer & Tuning) -->
-            <section class="top-section">
+            <!-- Display Top: Tuning & VU Meter -->
+            <section class="top-display-section">
                 <div class="vu-meter-box">
                     <div class="vu-meter-needle"></div>
-                    <span>VU</span>
+                    <span>VU METER</span>
                 </div>
                 <div class="tuning-display">
-                    FM  88 ... 102 ... 108  MHz<br>
-                    AM 550 ... 700 ... 1600 ... 1600 kHz
+                    FM &nbsp; 88 ... 102 ... 108 &nbsp; MHz<br>
+                    AM &nbsp; 550 ... 700 ... 1600 &nbsp; kHz
                 </div>
-                <div class="knob large-knob" data-function="tuning"></div>
             </section>
 
-            <!-- Bagian Tengah (Layar Visualizer & Kontrol Samping) -->
-            <section class="middle-section">
-                <!-- Kontrol Kiri -->
-                <div class="controls-left">
-                    <div class="info-plate">
-                        <h3>FATUR</h3>
-                        <p>AUDIO - JADUL & HIGH-FIDELITY</p>
-                    </div>
-                    <div class="sliders-group">
-                        <div class="slider-wrapper">
-                            <input type="range" orient="vertical" class="slider extra-vol">
-                            <label>EXTRA VOL</label>
-                        </div>
-                        <div class="slider-wrapper">
-                            <input type="range" orient="vertical" class="slider extra-vol">
-                            <label>EXTRA VOL</label>
-                        </div>
-                        <div class="toggle-wrapper">
-                            <label>BASS ON</label>
-                            <label class="switch">
-                                <input type="checkbox" id="bass-switch">
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Layar Visualizer -->
+            <!-- Screen Visualizer -->
+            <section class="visualizer-section">
                 <div class="visualizer-screen-frame">
                     <div id="visualizer-canvas-container"></div>
                 </div>
+            </section>
 
-                <!-- Kontrol Kanan -->
-                <div class="controls-right">
-                    <div class="knob-group">
-                        <div class="knob medium-knob" data-function="play-mode"></div>
-                        <label>PLAY MODE</label>
+            <!-- Panel Kontrol (Knobs, Sliders, Info Plate) -->
+            <section class="controls-panel">
+                <div class="info-plate">
+                    <h3>FATUR</h3>
+                    <p>AUDIO - JADUL & HIGH-FIDELITY</p>
+                </div>
+                
+                <div class="knobs-and-sliders">
+                    <div class="control-col">
+                        <div class="slider-wrapper">
+                            <input type="range" class="slider" id="vol1">
+                            <label for="vol1">EXTRA VOL 1</label>
+                        </div>
+                        <div class="slider-wrapper">
+                            <input type="range" class="slider" id="vol2">
+                            <label for="vol2">EXTRA VOL 2</label>
+                        </div>
                     </div>
-                    <div class="knob-group">
-                        <div class="knob medium-knob" data-function="bass-enhance"></div>
-                        <label>BASS</label>
-                    </div>
-                    <div class="knob-group">
-                         <div class="knob medium-knob" data-function="folder"></div>
-                        <label>FOLDER</label>
+
+                    <div class="control-col knobs-row">
+                        <div class="knob-group">
+                            <div class="knob medium-knob" data-function="play-mode"></div>
+                            <label>MODE</label>
+                        </div>
+                        <div class="knob-group">
+                            <div class="knob medium-knob" data-function="bass-enhance"></div>
+                            <label>BASS</label>
+                        </div>
+                        <div class="knob-group">
+                            <div class="knob medium-knob" data-function="tuning"></div>
+                            <label>TUNING</label>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Bagian Playlist & Tombol Kontrol Utama -->
-            <section class="bottom-section">
-                <div class="playlist-card brushed-metal">
+            <!-- Playlist Card -->
+            <section class="playlist-section">
+                <div class="playlist-card">
                     <h4>PLAYLIST CARD</h4>
                     <ul id="playlist-items">
                         <li>1. MISTENNE PARE STOCK</li>
@@ -89,20 +84,25 @@
                         <li>4. ODETERS</li>
                     </ul>
                 </div>
-                <div class="transport-controls">
+            </section>
+
+            <!-- Transport Controls (Tombol Utama) -->
+            <section class="transport-section">
+                <div class="transport-grid">
                     <button class="transport-btn" id="prev-btn">PREV</button>
                     <button class="transport-btn" id="stop-btn">STOP</button>
                     <button class="transport-btn" id="play-btn">PLAY</button>
                     <button class="transport-btn" id="pause-btn">PAUSE</button>
                     <button class="transport-btn" id="next-btn">NEXT</button>
                     <button class="transport-btn" id="repeat-btn">REPEAT</button>
-                    <button class="transport-btn" id="folder-btn">FOLDER</button>
+                    <button class="transport-btn full-width" id="folder-btn">FOLDER</button>
                 </div>
             </section>
 
-             <footer class="radio-footer">
-                <span class="custom-edition-tag">PLAYER JADULKU - 16:9 RESPONSIVE EDITION</span>
-             </footer>
+            <footer class="radio-footer">
+                <span class="custom-edition-tag">PLAYER JADULKU - 9:16 PORTRAIT EDITION</span>
+            </footer>
+
         </div>
     </div>
 
