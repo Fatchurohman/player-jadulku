@@ -1,265 +1,198 @@
-// script.js - Lengkap dengan Auto-Scale 16:9, Visualizer, & File Picker Lokal HP
-document.addEventListener('DOMContentLoaded', () => {
+// Data playlist JSON (contoh struktur data)
+const playlistData = [
+  {
+    id: 1,
+    title: "Laila Majnun",
+    artist: "fatur-music",
+    cover: "https://via.placeholder.com/300/1f242d/ffffff?text=Laila+Majnun",
+    src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+  },
+  {
+    id: 2,
+    title: "Hoax",
+    artist: "fatur-music",
+    cover: "https://via.placeholder.com/300/1f242d/ffffff?text=Hoax",
+    src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"
+  }
+];
 
-    // 1. Fungsi Auto-Scale agar Radio 16:9 Utuh di HP Landscape
-    function resizeRadioContainer() {
-        const wrapper = document.querySelector('.radio-scaler-wrapper');
-        if (!wrapper) return;
+class AudioPlayer {
+  constructor(tracks) {
+    // Validasi & Parsing Data JSON/Array
+    this.playlist = this.parsePlaylist(tracks);
+    this.currentIndex = 0;
+    this.isPlaying = false;
+    this.isShuffle = false;
+    this.isRepeat = false;
 
-        const baseWidth = 1280;
-        const baseHeight = 720;
+    // Instance Audio Element
+    this.audio = new Audio();
 
-        const windowWidth = window.innerWidth;
-        const windowHeight = window.innerHeight;
-
-        const scaleX = windowWidth / baseWidth;
-        const scaleY = windowHeight / baseHeight;
-        const scale = Math.min(scaleX, scaleY);
-
-        wrapper.style.transform = `scale(${scale})`;
-    }
-
-    window.addEventListener('resize', resizeRadioContainer);
-    resizeRadioContainer();
-
-    // 2. Inisialisasi Elemen Pemutar Audio & Validasi DOM
-    const playBtn = document.getElementById('play-btn');
-    const pauseBtn = document.getElementById('pause-btn');
-    const stopBtn = document.getElementById('stop-btn');
-    const prevBtn = document.getElementById('prev-btn');
-    const nextBtn = document.getElementById('next-btn');
-    const repeatBtn = document.getElementById('repeat-btn');
-    const folderBtn = document.getElementById('folder-btn');
-    const folderKnob = document.querySelector('.knob[data-function="folder"]');
+    // DOM Elements
+    this.playerWrapper = document.getElementById('playerApp');
+    this.playBtn = document.getElementById('playBtn');
+    this.playIcon = document.getElementById('playIcon');
+    this.prevBtn = document.getElementById('prevBtn');
+    this.nextBtn = document.getElementById('nextBtn');
+    this.shuffleBtn = document.getElementById('shuffleBtn');
+    this.repeatBtn = document.getElementById('repeatBtn');
     
-    const canvasContainer = document.getElementById('visualizer-canvas-container');
-    const playlistContainer = document.getElementById('playlist-items');
-    const playlistCard = document.querySelector('.playlist-card');
+    this.trackTitle = document.getElementById('trackTitle');
+    this.trackArtist = document.getElementById('trackArtist');
+    this.albumArt = document.getElementById('albumArt');
+    
+    this.progressBar = document.getElementById('progressBar');
+    this.progressFill = document.getElementById('progressFill');
+    this.currentTimeEl = document.getElementById('currentTime');
+    this.durationTimeEl = document.getElementById('durationTime');
 
-    if (!playBtn || !canvasContainer) {
-        console.error("Elemen esensial pemutar audio tidak ditemukan di DOM.");
-        return;
-    }
+    this.init();
+  }
 
-    // 3. Buat Input File Tersembunyi untuk Ambil Musik dari HP
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.accept = 'audio/*';
-    fileInput.multiple = true;
-    fileInput.style.display = 'none';
-    document.body.appendChild(fileInput);
-
-    // 4. Setup Canvas Visualizer
-    const canvas = document.createElement('canvas');
-    canvas.width = canvasContainer.clientWidth || 600;
-    canvas.height = canvasContainer.clientHeight || 250;
-    canvasContainer.appendChild(canvas);
-    const canvasCtx = canvas.getContext('2d');
-
-    // 5. Data Playlist Default (JSON Aman & Validasi)
-    let playlist = [];
+  // Safe JSON/Array Parser
+  parsePlaylist(data) {
     try {
-        const initialItems = document.querySelectorAll('#playlist-items li');
-        playlist = Array.from(initialItems).map((item, index) => ({
-            id: index + 1,
-            title: item ? item.textContent.trim() : `Track ${index + 1}`,
-            url: [
-                'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-                'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
-                'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3'
-            ][index % 3] 
-        }));
+      const parsed = typeof data === 'string' ? JSON.parse(data) : data;
+      if (!Array.isArray(parsed) || parsed.length === 0) {
+        throw new Error('Data playlist tidak valid atau kosong.');
+      }
+      return parsed.map(track => ({
+        id: track?.id ?? Date.now(),
+        title: track?.title || 'Unknown Title',
+        artist: track?.artist || 'Unknown Artist',
+        cover: track?.cover || 'https://via.placeholder.com/300/1f242d/ffffff?text=No+Cover',
+        src: track?.src || ''
+      }));
     } catch (error) {
-        console.error("Gagal memparsing playlist awal:", error);
-        playlist = [];
+      console.error('Error parsing playlist:', error.message);
+      return [];
     }
+  }
 
-    let currentIndex = 0;
-    let isPlaying = false;
-    let animationId = null;
+  init() {
+    if (this.playlist.length === 0) return;
 
-    // 6. Web Audio API & Audio Element
-    let audioCtx, analyser, dataArray, sourceNode;
-    let audioElement = new Audio();
-    audioElement.crossOrigin = "anonymous";
+    this.loadTrack(this.currentIndex);
+    this.bindEvents();
+  }
 
-    function loadTrack(index) {
-        try {
-            if (playlist && playlist[index] && playlist[index].url) {
-                audioElement.src = playlist[index].url;
-                audioElement.load();
-                highlightActivePlaylist(index);
-            }
-        } catch (e) {
-            console.error("Error saat memuat track:", e);
-        }
+  loadTrack(index) {
+    const track = this.playlist[index];
+    if (!track) return;
+
+    this.trackTitle.textContent = track.title;
+    this.trackArtist.textContent = track.artist;
+    this.albumArt.src = track.cover;
+    this.audio.src = track.src;
+
+    this.progressFill.style.width = '0%';
+    this.currentTimeEl.textContent = '0:00';
+    this.durationTimeEl.textContent = '0:00';
+  }
+
+  bindEvents() {
+    // Play / Pause Toggle
+    this.playBtn.addEventListener('click', () => this.togglePlay());
+
+    // Next & Prev
+    this.nextBtn.addEventListener('click', () => this.nextTrack());
+    this.prevBtn.addEventListener('click', () => this.prevTrack());
+
+    // Shuffle & Repeat Toggles
+    this.shuffleBtn.addEventListener('click', () => {
+      this.isShuffle = !this.isShuffle;
+      this.shuffleBtn.style.opacity = this.isShuffle ? '1' : '0.5';
+    });
+
+    this.repeatBtn.addEventListener('click', () => {
+      this.isRepeat = !this.isRepeat;
+      this.repeatBtn.style.opacity = this.isRepeat ? '1' : '0.5';
+    });
+
+    // Audio Event Listeners
+    this.audio.addEventListener('loadedmetadata', () => {
+      this.durationTimeEl.textContent = this.formatTime(this.audio.duration);
+    });
+
+    this.audio.addEventListener('timeupdate', () => {
+      if (this.audio.duration) {
+        const percent = (this.audio.currentTime / this.audio.duration) * 100;
+        this.progressFill.style.width = `${percent}%`;
+        this.currentTimeEl.textContent = this.formatTime(this.audio.currentTime);
+      }
+    });
+
+    this.audio.addEventListener('ended', () => {
+      if (this.isRepeat) {
+        this.audio.currentTime = 0;
+        this.play();
+      } else {
+        this.nextTrack();
+      }
+    });
+
+    // Progress Bar Click Seek
+    this.progressBar.addEventListener('click', (e) => {
+      const rect = this.progressBar.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const width = rect.width;
+      if (this.audio.duration) {
+        this.audio.currentTime = (clickX / width) * this.audio.duration;
+      }
+    });
+  }
+
+  togglePlay() {
+    if (this.isPlaying) {
+      this.pause();
+    } else {
+      this.play();
     }
+  }
 
-    function highlightActivePlaylist(index) {
-        const currentItems = playlistContainer.querySelectorAll('li');
-        currentItems.forEach((li, idx) => {
-            if (li) {
-                li.style.color = (idx === index) ? '#00ffcc' : '#222';
-                li.style.fontWeight = (idx === index) ? 'bold' : 'normal';
-            }
-        });
+  play() {
+    if (!this.audio.src) return;
+    this.audio.play().then(() => {
+      this.isPlaying = true;
+      this.playerWrapper.classList.add('playing');
+      // SVG Pause Icon
+      this.playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+    }).catch(err => console.error('Playback error:', err));
+  }
+
+  pause() {
+    this.audio.pause();
+    this.isPlaying = false;
+    this.playerWrapper.classList.remove('playing');
+    // SVG Play Icon
+    this.playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+  }
+
+  nextTrack() {
+    if (this.isShuffle) {
+      this.currentIndex = Math.floor(Math.random() * this.playlist.length);
+    } else {
+      this.currentIndex = (this.currentIndex + 1) % this.playlist.length;
     }
+    this.loadTrack(this.currentIndex);
+    if (this.isPlaying) this.play();
+  }
 
-    function initAudioContext() {
-        if (!audioCtx) {
-            try {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                analyser = audioCtx.createAnalyser();
-                analyser.fftSize = 64;
-                
-                sourceNode = audioCtx.createMediaElementSource(audioElement);
-                sourceNode.connect(analyser);
-                analyser.connect(audioCtx.destination);
-                
-                dataArray = new Uint8Array(analyser.frequencyBinCount);
-            } catch (e) {
-                console.warn("Web Audio API tidak didukung penuh:", e);
-            }
-        }
-    }
+  prevTrack() {
+    this.currentIndex = (this.currentIndex - 1 + this.playlist.length) % this.playlist.length;
+    this.loadTrack(this.currentIndex);
+    if (this.isPlaying) this.play();
+  }
 
-    if (playlist.length > 0) {
-        loadTrack(currentIndex);
-    }
+  formatTime(seconds) {
+    if (isNaN(seconds)) return '0:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+  }
+}
 
-    // 7. Render Efek Visualizer Real-time
-    function drawVisualizer() {
-        animationId = requestAnimationFrame(drawVisualizer);
-
-        const width = canvas.width;
-        const height = canvas.height;
-
-        canvasCtx.fillStyle = '#111111';
-        canvasCtx.fillRect(0, 0, width, height);
-
-        if (analyser && isPlaying && audioCtx && audioCtx.state === 'running') {
-            analyser.getByteFrequencyData(dataArray);
-        } else {
-            for (let i = 0; i < (dataArray ? dataArray.length : 32); i++) {
-                if (dataArray) dataArray[i] = Math.floor(Math.random() * 15) + 5;
-            }
-        }
-
-        const barWidth = (width / (dataArray ? dataArray.length : 32)) * 1.5;
-        let x = 0;
-
-        const bufferLen = dataArray ? dataArray.length : 32;
-        for (let i = 0; i < bufferLen; i++) {
-            const barHeight = (dataArray ? dataArray[i] : 20) * 1.2;
-
-            let red = barHeight + 25;
-            let green = 255 - (i * 5);
-            let blue = 150;
-
-            canvasCtx.fillStyle = `rgb(${red},${green},${blue})`;
-            canvasCtx.fillRect(x, height - barHeight, barWidth - 2, barHeight);
-
-            x += barWidth + 1;
-        }
-    }
-
-    drawVisualizer();
-
-    // 8. Event Handler untuk Tombol Folder (Buka File HP)
-    function handleFolderOpen() {
-        try {
-            fileInput.click();
-        } catch (e) {
-            console.error("Gagal membuka file picker:", e);
-        }
-    }
-
-    if (folderBtn) folderBtn.addEventListener('click', handleFolderOpen);
-    if (folderKnob) folderKnob.addEventListener('click', handleFolderOpen);
-
-    fileInput.addEventListener('change', (event) => {
-        try {
-            const files = event.target.files;
-            if (!files || files.length === 0) return;
-
-            playlist = [];
-            playlistContainer.innerHTML = '';
-
-            Array.from(files).forEach((file, index) => {
-                const fileUrl = URL.createObjectURL(file);
-                playlist.push({
-                    id: index + 1,
-                    title: file.name,
-                    url: fileUrl
-                });
-
-                const li = document.createElement('li');
-                li.textContent = `${index + 1}. ${file.name}`;
-                playlistContainer.appendChild(li);
-            });
-
-            currentIndex = 0;
-            loadTrack(currentIndex);
-            if (playlistCard) {
-                playlistCard.style.borderColor = '#00ffcc';
-                setTimeout(() => playlistCard.style.borderColor = '#555', 600);
-            }
-            console.log(`Berhasil memuat ${playlist.length} lagu lokal.`);
-        } catch (e) {
-            console.error("Error memproses file lokal:", e);
-        }
-    });
-
-    // 9. Event Listener Kontrol Transport Musik
-    playBtn.addEventListener('click', () => {
-        initAudioContext();
-        if (audioCtx && audioCtx.state === 'suspended') {
-            audioCtx.resume();
-        }
-        
-        audioElement.play().then(() => {
-            isPlaying = true;
-            console.log(`Memutar: ${playlist[currentIndex] ? playlist[currentIndex].title : ''}`);
-        }).catch(e => {
-            console.error("Gagal memutar audio:", e);
-        });
-    });
-
-    pauseBtn.addEventListener('click', () => {
-        isPlaying = false;
-        audioElement.pause();
-    });
-
-    stopBtn.addEventListener('click', () => {
-        isPlaying = false;
-        audioElement.pause();
-        audioElement.currentTime = 0;
-    });
-
-    nextBtn.addEventListener('click', () => {
-        if (playlist.length > 0) {
-            currentIndex = (currentIndex + 1) % playlist.length;
-            loadTrack(currentIndex);
-            if (isPlaying) audioElement.play();
-        }
-    });
-
-    prevBtn.addEventListener('click', () => {
-        if (playlist.length > 0) {
-            currentIndex = (currentIndex - 1 + playlist.length) % playlist.length;
-            loadTrack(currentIndex);
-            if (isPlaying) audioElement.play();
-        }
-    });
-
-    repeatBtn.addEventListener('click', () => {
-        audioElement.loop = !audioElement.loop;
-        repeatBtn.style.background = audioElement.loop ? 'linear-gradient(to bottom, #a0ffa0, #50c050)' : '';
-    });
-
-    audioElement.addEventListener('ended', () => {
-        if (!audioElement.loop) {
-            nextBtn.click();
-        }
-    });
+// Inisialisasi saat DOM siap
+document.addEventListener('DOMContentLoaded', () => {
+  new AudioPlayer(playlistData);
 });
